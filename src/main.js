@@ -21,6 +21,53 @@ function getWeatherData(lat, lon) {
 }
 
 function renderUI(data) {
+  // check if no internet, then try to load weather data from local storage
+  if (!navigator.onLine) {
+    const cachedData = localStorage.getItem("currentWeather");
+    if (cachedData) {
+      data = JSON.parse(cachedData);
+    } else {
+      alert("No internet connection and no cached data available.");
+      return;
+    }
+  }
+
+  // based on current weather code, we can change the background image or color of the app for better user experience
+  const weatherCode = data.current.weather_code;
+  const appContainer = document.getElementById("app-container");
+
+  if (weatherCode === 0) {
+    // Clear sky - set a sunny background
+    appContainer.style.backgroundImage =
+      "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1350&q=80')";
+  } else if (weatherCode >= 1 && weatherCode <= 3) {
+    // Cloudy - set a cloudy background
+    appContainer.style.backgroundImage =
+      "url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?auto=format&fit=crop&w=1350&q=80')";
+  } else if (weatherCode >= 45 && weatherCode <= 48) {
+    // Foggy - set a foggy background
+    appContainer.style.backgroundImage =
+      "url('https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1350&q=80')";
+  } else if (
+    (weatherCode >= 51 && weatherCode <= 67) ||
+    (weatherCode >= 80 && weatherCode <= 82)
+  ) {
+    // Rainy - set a rainy background
+    appContainer.style.backgroundImage =
+      "url('https://images.unsplash.com/photo-1527766833261-b09c3163a791?auto=format&fit=crop&w=1350&q=80')";
+  } else if (
+    (weatherCode >= 71 && weatherCode <= 77) ||
+    (weatherCode >= 85 && weatherCode <= 86)
+  ) {
+    // Snowy - set a snowy background
+    appContainer.style.backgroundImage =
+      "url('https://images.unsplash.com/photo-1608889177908-9c0b1e5a7c8b?auto=format&fit=crop&w=1350&q=80')";
+  } else {
+    // Default background for unknown weather codes
+    appContainer.style.backgroundImage =
+      "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1350&q=80')";
+  }
+
   // append data-lat and data-lon to the copy button for easy access when copying
   const copyButton = document.getElementById("copyLatLng");
   copyButton.setAttribute("data-lat", data.latitude);
@@ -76,13 +123,12 @@ function getDailyForecast(dailyForecastData) {
 
   for (let i = 1; i < dailyForecastData.time.length; i++) {
     const time = new Date(dailyForecastData.time[i]);
-    const temperature = dailyForecastData.temperature_2m_max[i];
     const weatherCode = dailyForecastData.weather_code[i];
 
     // Create a forecast item element
     const forecastItem = document.createElement("div");
     forecastItem.className =
-      "text-center bg-purple-950/50 rounded text-purple-400 py-2 space-y-1";
+      "text-center bg-gray-200 rounded text-black py-2 space-y-1";
 
     // Create an element for the weather icon (you can replace this with actual icons)
     const weatherIcon = document.createElement("div");
@@ -101,8 +147,9 @@ function getDailyForecast(dailyForecastData) {
 
     // Create an element for the temperature
     const tempElement = document.createElement("p");
-    tempElement.className = "text-sm";
-    tempElement.textContent = `${temperature}°C`;
+    tempElement.className =
+      "text-sm font-semibold bg-purple-400/20 rounded px-1 w-fit mx-auto";
+    tempElement.textContent = `${dailyForecastData.temperature_2m_min[i]} - ${dailyForecastData.temperature_2m_max[i]}°C`;
     forecastItem.appendChild(tempElement);
 
     // Append the forecast item to the container
@@ -144,6 +191,9 @@ function getWeatherStatus(code) {
 
 // Main entry point of the application
 getWeatherData().then((data) => {
+  // save current weather to local storage for offline access
+  localStorage.setItem("currentWeather", JSON.stringify(data));
+
   // Update the UI with the fetched weather data
   renderUI(data);
 });
@@ -182,25 +232,35 @@ document.getElementById("search-input").addEventListener("input", (event) => {
         searchResultsContainer.classList.remove("hidden");
         searchResultsContainer.innerHTML = ""; // Clear previous results
 
-        data.results.forEach((place) => {
-          const listItem = document.createElement("li");
-          listItem.className =
-            "px-2 py-1 hover:bg-gray-300 cursor-pointer transition-colors duration-200";
-          // Display admin3, admin2, admin1, and country for better context
-          listItem.textContent = `${place.name}, ${place.admin3 || place.admin2 || place.admin1 || ""}, ${place.country}`;
-          //   listItem.textContent = `${place.name}, ${place.country}`;
-          listItem.title = `Get weather for ${place.name}`;
-          listItem.addEventListener("click", () => {
-            getWeatherData(place.latitude, place.longitude).then((data) => {
-              renderUI(data);
-              document.querySelector("#current-location-name").textContent =
-                `${place.name}, ${place.country}`;
-              // Hide the search results container after selection
-              searchResultsContainer.classList.add("hidden");
+        if (data.results) {
+          data.results.forEach((place) => {
+            const listItem = document.createElement("li");
+            listItem.className =
+              "px-2 py-1 hover:bg-gray-300 cursor-pointer transition-colors duration-200";
+            // Display admin3, admin2, admin1, and country for better context
+            // some datas don't have admin3, so we can fallback to admin2 or admin1
+            listItem.textContent = `${place.name}, ${place.admin3 || place.admin2 || place.admin1 || ""}, ${place.country}`;
+            //   listItem.textContent = `${place.name}, ${place.country}`;
+            listItem.title = `Get weather for ${place.name}`;
+            listItem.addEventListener("click", () => {
+              getWeatherData(place.latitude, place.longitude).then((data) => {
+                renderUI(data);
+                document.querySelector("#current-location-name").textContent =
+                  `${place.name}, ${place.country}`;
+                // Hide the search results container after selection
+                searchResultsContainer.classList.add("hidden");
+              });
             });
+            searchResultsContainer.appendChild(listItem);
           });
-          searchResultsContainer.appendChild(listItem);
-        });
+        } else {
+          // if no results found, show a message
+          const noResultsItem = document.createElement("li");
+          noResultsItem.className =
+            "px-2 py-1 text-gray-500 italic cursor-default text-center";
+          noResultsItem.textContent = "No results found";
+          searchResultsContainer.appendChild(noResultsItem);
+        }
       })
       .catch((error) => {
         console.error("Error fetching search results:", error);
@@ -226,3 +286,30 @@ document.getElementById("copyLatLng").addEventListener("click", () => {
   const latLng = `Latitude: ${lat}, Longitude: ${lon}`;
   copyToClipboard(latLng);
 });
+
+// detect user's location using Geolocation API and fetch weather data for that location
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords;
+      getWeatherData(latitude, longitude).then((data) => {
+        renderUI(data);
+        // Update the location name to "Your Location" when using geolocation
+        document.querySelector("#current-location-name").textContent = "Home";
+      });
+    },
+    (error) => {
+      console.error("Error getting geolocation:", error);
+      // If geolocation fails, fetch weather data for the default location (Chennai)
+      getWeatherData().then((data) => {
+        renderUI(data);
+      });
+    },
+  );
+} else {
+  console.error("Geolocation is not supported by this browser.");
+  // If geolocation is not supported, fetch weather data for the default location (Chennai)
+  getWeatherData().then((data) => {
+    renderUI(data);
+  });
+}

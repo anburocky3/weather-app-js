@@ -1,2 +1,12 @@
-@import "tailwindcss"; 
+@import "tailwindcss";
 @source "../index.html";
+
+#app-container {
+  @apply min-h-screen bg-linear-to-br from-blue-950 to-purple-950 text-white;
+  /* Overlay of black with 50% opacity */
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  /* I want a background color on top of this image, so my text stands out and visibility is good */
+  background-blend-mode: overlay !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+}

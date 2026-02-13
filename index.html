@@ -13,6 +13,7 @@
   </head>
   <body
     class="min-h-screen bg-linear-to-br from-blue-950 to-purple-950 text-white"
+    id="app-container"
   >
     <main class="max-w-6xl mx-auto space-y-10">
       <!-- Heading -->
@@ -252,14 +253,12 @@
             alt="Anbu"
             class="rounded-full w-24"
           /> -->
-          <div class="space-y-2">
-            <p class="text-sm text-gray-200">
+          <div class="space-y-2 bg-gray-200 text-black rounded px-4 py-2">
+            <p class="text-sm">
               Humidity: <span id="current-humidity"></span>%
             </p>
-            <p class="text-sm text-gray-200">
-              Wind: <span id="current-wind"></span> km/h
-            </p>
-            <p class="text-sm text-gray-200">
+            <p class="text-sm">Wind: <span id="current-wind"></span> km/h</p>
+            <p class="text-sm">
               Elevation: <span id="current-elevation"></span> km
             </p>
           </div>
@@ -268,8 +267,8 @@
 
       <!-- Weather Forecast -->
       <section>
-        <h3 class="text-lg font-medium mb-4">For next 3 days</h3>
-        <div class="bg-pink-600/10 p-5 rounded">
+        <h3 class="text-lg font-medium">For next 3 days</h3>
+        <div class="bg-gray-600/10 py-5 rounded">
           <!-- forecast item -->
           <div class="grid grid-cols-3 gap-5" id="daily-forecast"></div>
           <!-- <div
