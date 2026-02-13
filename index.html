@@ -17,7 +17,9 @@
   >
     <main class="max-w-6xl mx-auto space-y-10">
       <!-- Heading -->
-      <section class="flex items-center justify-between my-10">
+      <section
+        class="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between m-10 sm:mx-0 sm:my-10 space-y-3"
+      >
         <div>
           <h4 class="text-xl font-medium flex items-center space-x-2">
             <span id="current-location-name">Chennai, India</span>
@@ -78,7 +80,9 @@
       </section>
 
       <!-- Weather Information -->
-      <section class="h-75 flex items-center justify-between rounded">
+      <section
+        class="h-92 sm:h-75 flex flex-col sm:flex-row items-center sm:justify-between rounded space-y-3 sm:space-y-0"
+      >
         <div>
           <div class="flex items-center">
             <div class="text-6xl font-bold" id="current-temperature">28°</div>
@@ -253,7 +257,9 @@
             alt="Anbu"
             class="rounded-full w-24"
           /> -->
-          <div class="space-y-2 bg-gray-200 text-black rounded px-4 py-2">
+          <div
+            class="space-y-2 bg-gray-200 text-black rounded px-4 py-2 hidden sm:block"
+          >
             <p class="text-sm">
               Humidity: <span id="current-humidity"></span>%
             </p>
@@ -266,11 +272,14 @@
       </section>
 
       <!-- Weather Forecast -->
-      <section>
-        <h3 class="text-lg font-medium">For next 3 days</h3>
-        <div class="bg-gray-600/10 py-5 rounded">
+      <section class="px-5 sm:px-0 sm:py-5">
+        <h3 class="text-lg font-medium mb-2">For next 3 days</h3>
+        <div class="bg-gray-600/10 rounded">
           <!-- forecast item -->
-          <div class="grid grid-cols-3 gap-5" id="daily-forecast"></div>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-3 gap-5"
+            id="daily-forecast"
+          ></div>
           <!-- <div
             class="shrink-0 w-20 text-center bg-purple-950/50 rounded text-purple-400 py-2 space-y-1"
             id=""
@@ -286,6 +295,18 @@
         </div>
       </section>
     </main>
+
+    <footer>
+      <p class="text-center text-white text-xs py-5">
+        &copy; 2026 Weather App. All rights reserved. |
+        <a
+          href="https://github.com/anburocky3/weather-app-js/fork"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Github</a
+        >
+      </p>
+    </footer>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
