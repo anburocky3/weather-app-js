@@ -19,9 +19,10 @@
       <section class="flex items-center justify-between my-10">
         <div>
           <h4 class="text-xl font-medium flex items-center space-x-2">
-            Chennai, India
+            <span id="current-location-name">Chennai, India</span>
             <button
               type="button"
+              id="copyLatLng"
               title="Copy Lat/Lng of this location"
               class="w-4 ml-3 mt-1 text-white/50 hover:text-green-500 transition-opacity hover:scale-110"
             >
@@ -59,9 +60,18 @@
             </svg>
             <input
               type="search"
+              id="search-input"
               placeholder="Search Cities"
               class="bg-gray-50 placeholder:text-xs rounded text-black px-4 py-1 text-sm focus:outline-none pl-8"
             />
+            <!-- Show search results -->
+
+            <ul
+              id="search-results"
+              class="absolute top-full left-0 w-full bg-gray-50 text-black rounded mt-1 max-h-60 overflow-y-auto text-xs hidden"
+            >
+              <!-- Search results will be populated here -->
+            </ul>
           </div>
         </div>
       </section>

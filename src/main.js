@@ -5,17 +5,27 @@ import "./global.css";
 const BASE_API_URL = "https://api.open-meteo.com/v1/";
 const FORCAST_API = BASE_API_URL + "/forecast";
 
-// Latitude and longitude for Chennai
-const latitude = 13.0827;
-const longitude = 80.2707;
+function getWeatherData(lat, lon) {
+  // Latitude and longitude for Chennai
+  let latitude = 13.0827;
+  let longitude = 80.2707;
 
-function getWeatherData() {
+  if (!lat || !lon) {
+    lat = latitude;
+    lon = longitude;
+  }
+
   return fetch(
-    `${FORCAST_API}?latitude=${latitude}&longitude=${longitude}&daily=sunrise,sunset,weather_code,temperature_2m_min,temperature_2m_max&hourly=temperature_2m&current=weather_code,temperature_2m,apparent_temperature,relative_humidity_2m,is_day,rain,precipitation,wind_speed_10m&timezone=auto&forecast_days=4`,
+    `${FORCAST_API}?latitude=${lat}&longitude=${lon}&daily=sunrise,sunset,weather_code,temperature_2m_min,temperature_2m_max&hourly=temperature_2m&current=weather_code,temperature_2m,apparent_temperature,relative_humidity_2m,is_day,rain,precipitation,wind_speed_10m&timezone=auto&forecast_days=4`,
   ).then((response) => response.json());
 }
 
 function renderUI(data) {
+  // append data-lat and data-lon to the copy button for easy access when copying
+  const copyButton = document.getElementById("copyLatLng");
+  copyButton.setAttribute("data-lat", data.latitude);
+  copyButton.setAttribute("data-lon", data.longitude);
+
   // Update the current date
   document.getElementById("current-date").textContent =
     new Date().toLocaleDateString("en-US", {
@@ -59,19 +69,12 @@ function renderUI(data) {
   getDailyForecast(data.daily);
 }
 
-// Main entry point of the application
-getWeatherData().then((data) => {
-  // Update the UI with the fetched weather data
-  renderUI(data);
-});
-
 function getDailyForecast(dailyForecastData) {
   const forecastContainer = document.getElementById("daily-forecast");
 
   forecastContainer.innerHTML = ""; // Clear existing forecast items
 
   for (let i = 1; i < dailyForecastData.time.length; i++) {
-    console.log(dailyForecastData);
     const time = new Date(dailyForecastData.time[i]);
     const temperature = dailyForecastData.temperature_2m_max[i];
     const weatherCode = dailyForecastData.weather_code[i];
@@ -138,3 +141,88 @@ function getWeatherStatus(code) {
   };
   return weatherCodes[code] || "Unknown weather code";
 }
+
+// Main entry point of the application
+getWeatherData().then((data) => {
+  // Update the UI with the fetched weather data
+  renderUI(data);
+});
+
+async function searchPlaces(query) {
+  // validate query
+  if (!query || query.trim() === "") {
+    return { results: [] }; // Return empty results for empty query
+  }
+
+  return await fetch(
+    `https://geocoding-api.open-meteo.com/v1/search?name=${query}&count=5&language=en&format=json`,
+  ).then((response) => response.json());
+}
+
+let debounceTimeout;
+
+// Add event listener to the search input for real-time search
+document.getElementById("search-input").addEventListener("input", (event) => {
+  const query = event.target.value.toLowerCase();
+
+  // implement debounce to limit API calls while typing
+  clearTimeout(debounceTimeout);
+
+  debounceTimeout = setTimeout(async () => {
+    await searchPlaces(query)
+      .then((data) => {
+        // You can update the UI with the search results here
+        const searchResultsContainer =
+          document.getElementById("search-results");
+        // Transitions
+        searchResultsContainer.style.transition = "opacity 0.3s ease";
+        searchResultsContainer.style.opacity = "1";
+
+        // Show the search results container
+        searchResultsContainer.classList.remove("hidden");
+        searchResultsContainer.innerHTML = ""; // Clear previous results
+
+        data.results.forEach((place) => {
+          const listItem = document.createElement("li");
+          listItem.className =
+            "px-2 py-1 hover:bg-gray-300 cursor-pointer transition-colors duration-200";
+          // Display admin3, admin2, admin1, and country for better context
+          listItem.textContent = `${place.name}, ${place.admin3 || place.admin2 || place.admin1 || ""}, ${place.country}`;
+          //   listItem.textContent = `${place.name}, ${place.country}`;
+          listItem.title = `Get weather for ${place.name}`;
+          listItem.addEventListener("click", () => {
+            getWeatherData(place.latitude, place.longitude).then((data) => {
+              renderUI(data);
+              document.querySelector("#current-location-name").textContent =
+                `${place.name}, ${place.country}`;
+              // Hide the search results container after selection
+              searchResultsContainer.classList.add("hidden");
+            });
+          });
+          searchResultsContainer.appendChild(listItem);
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching search results:", error);
+      });
+  }, 300); // Adjust the debounce delay as needed
+});
+
+// Helper function to copy text to clipboard
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(
+    () => {
+      alert(`Copied to clipboard: ${text}`);
+    },
+    (err) => {
+      console.error("Could not copy text: ", err);
+    },
+  );
+}
+// Add event listener to the copy button to copy latitude and longitude
+document.getElementById("copyLatLng").addEventListener("click", () => {
+  const lat = document.getElementById("copyLatLng").getAttribute("data-lat");
+  const lon = document.getElementById("copyLatLng").getAttribute("data-lon");
+  const latLng = `Latitude: ${lat}, Longitude: ${lon}`;
+  copyToClipboard(latLng);
+});
