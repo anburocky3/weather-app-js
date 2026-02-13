@@ -3,12 +3,119 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://cdn-icons-png.flaticon.com/512/1779/1779940.png"
+    />
     <title>Weather App</title>
   </head>
-  <body class="min-h-screen bg-slate-950 text-slate-100">
-    <h1 class="text-3xl font-bold text-center mt-10 text-orange-500">
-      Weather App
-    </h1>
+  <body
+    class="min-h-screen bg-linear-to-br from-blue-950 to-purple-950 text-white"
+  >
+    <main class="max-w-6xl mx-auto space-y-10">
+      <!-- Heading -->
+      <section class="flex items-center justify-between my-10">
+        <div>
+          <h4 class="text-xl font-medium flex items-center space-x-2">
+            Chennai, India
+            <button
+              type="button"
+              title="Copy Lat/Lng of this location"
+              class="w-4 ml-3 mt-1 text-white/50 hover:text-green-500 transition-opacity hover:scale-110"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                class="w-4"
+              >
+                <!-- Icon from Material Symbols by Google - https://github.com/google/material-design-icons/blob/master/LICENSE -->
+                <path
+                  fill="currentColor"
+                  d="M9 18q-.825 0-1.412-.587T7 16V4q0-.825.588-1.412T9 2h9q.825 0 1.413.588T20 4v12q0 .825-.587 1.413T18 18zm0-2h9V4H9zm-4 6q-.825 0-1.412-.587T3 20V6h2v14h11v2zm4-6V4z"
+                />
+              </svg>
+            </button>
+          </h4>
+          <p class="text-gray-200 text-sm">Friday, 13th Feb 2026</p>
+        </div>
+        <div>
+          <div class="relative">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              class="absolute top-1.5 text-purple-950 w-4 h-4 left-2"
+            >
+              <!-- Icon from Material Symbols by Google - https://github.com/google/material-design-icons/blob/master/LICENSE -->
+              <path
+                fill="currentColor"
+                d="M9.5 16q-2.725 0-4.612-1.888T3 9.5t1.888-4.612T9.5 3t4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l5.6 5.6q.275.275.275.7t-.275.7t-.7.275t-.7-.275l-5.6-5.6q-.75.6-1.725.95T9.5 16m0-2q1.875 0 3.188-1.312T14 9.5t-1.312-3.187T9.5 5T6.313 6.313T5 9.5t1.313 3.188T9.5 14"
+              />
+            </svg>
+            <input
+              type="search"
+              placeholder="Search Cities"
+              class="bg-gray-50 placeholder:text-xs rounded text-black px-4 py-1 text-sm focus:outline-none pl-8"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- Weather Information -->
+      <section class="h-75 flex items-center justify-between rounded">
+        <div>
+          <div class="flex items-center">
+            <div class="text-6xl font-bold">28°</div>
+            <div class="space-y-2 ml-3">
+              <p class="text-sm text-gray-200">Partly Cloudy</p>
+              <p class="text-sm text-gray-200">Feels like 22°</p>
+            </div>
+          </div>
+          <p
+            class="text-sm text-gray-200 bg-gray-500/50 rounded px-4 py-1 mt-4 w-max"
+          >
+            Sunrise: 6am; Sunset: 6pm
+          </p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <img
+            src="https://github.com/anburocky3.png"
+            alt="Anbu"
+            class="rounded-full w-24"
+          />
+          <div class="space-y-2">
+            <p class="text-sm text-gray-200">Humidity: 60%</p>
+            <p class="text-sm text-gray-200">Wind: 10 km/h</p>
+            <p class="text-sm text-gray-200">Elevation: 10 km</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Weather Forecast -->
+      <section>
+        <h3 class="text-lg font-medium mb-4">Hourly Forecast</h3>
+        <div class="flex space-x-4 overflow-x-auto bg-pink-600/10 p-5 rounded">
+          <!-- Example forecast item -->
+          <div
+            class="shrink-0 w-20 text-center bg-purple-950/50 rounded text-purple-400 py-2 space-y-1"
+          >
+            <p class="text-sm font-semibold">29°</p>
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/1779/1779940.png"
+              alt="Weather Icon"
+              class="w-8 h-8 mx-auto"
+            />
+            <p class="text-xs font-semibold">2 PM</p>
+          </div>
+          <!-- Add more forecast items as needed -->
+        </div>
+      </section>
+    </main>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
